@@ -1,0 +1,3 @@
+pyzbar==0.1.8
+azure-functions
+Pillow

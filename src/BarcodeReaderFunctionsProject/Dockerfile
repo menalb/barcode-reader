@@ -6,6 +6,7 @@ ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
     AzureFunctionsJobHost__Logging__Console__IsEnabled=true
 
 COPY requirements.txt /
+RUN apt-get update && apt-get install -y libzbar0
 RUN pip install -r /requirements.txt
 
 COPY . /home/site/wwwroot

@@ -1,11 +1,10 @@
 import io
 import logging
-import json
-
 from PIL import Image
 from pyzbar import pyzbar
-
 import azure.functions as func
+
+from ..http_helpers.http_response import *
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
@@ -22,10 +21,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(
             "Bad input. Unable to cast request body to an image format.",
             status_code=400)
-
-
-def okResponse(messageBody) -> {}:
-    return func.HttpResponse(json.dumps(messageBody), status_code=200)
 
 
 def readBarcode(image):

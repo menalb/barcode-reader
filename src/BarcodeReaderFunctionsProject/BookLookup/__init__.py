@@ -3,34 +3,44 @@ import logging
 import json
 import azure.functions as func
 import os
+from ..http_helpers.http_response import *
+
+
+url = os.environ.get('BookLookupAPIUrl')
+apikey = os.environ.get('APIKey')
+
+apiConfig = {'key': apikey, 'url': url}
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Python HTTP trigger function processed a request.')
-
     barcode = req.params.get('barcode')
 
-    apikey = os.environ.get('APIKey')
+    if barcode is None:
+        return badRequestResponse('Invalid Barcode')
 
-    url = os.environ.get('BookLookupAPIUrl')
+    book = getBookInfo(barcode, apiConfig)
+    return okResponse(book)
 
-    logging.info(apikey)
-    try:
-        params = {
-            'q': f'isbn:{barcode}', 'key': apikey}
-        r = requests.get(url=url, params=params)
 
-        response = r.json()
+def getBookInfo(barcode: str, bookLookupApiConfig: {}) -> {}:
+    params = {
+        'q': f'isbn:{barcode}', 'key': bookLookupApiConfig['key']}
+    r = requests.get(url=bookLookupApiConfig['url'], params=params)
 
+    response = r.json()
+
+    if 'items' in response and len(response['items']) > 0:
         book = response['items'][0]['volumeInfo']
-        return func.HttpResponse(json.dumps(book))
-    except ValueError:
-        pass
+        return {
+            'title': book['title'],
+            'authors': book['authors'],
+            'description': book['description'],
+            'categories': book['categories'],
+            'imageLinks': book['imageLinks'],
+        }
 
-    if barcode:
-        return func.HttpResponse(f"Hello {barcode}!")
-    else:
-        return func.HttpResponse(
-            "Please pass a name on the query string or in the request body",
-            status_code=400
-        )
+    return None
+
+
+def getBarcodeFromRequest(req: func.HttpRequest) -> str:
+    return req.params.get('barcode')

@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json.schemastore.org/proxies",
+    "proxies": {
+        "proxyHomePage": {
+            "matchCondition": {
+                "methods": [
+                    "GET", "POST", "OPTIONS"
+                ],
+                "route": "/api/{*restOfPath}"
+            },
+            "responseOverrides": {
+                "response.statusCode": "200",
+                "response.headers.Allow": "OPTIONS, POST,GET",
+                "response.headers.Access-Control-Allow-Origin": "{request.headers.Origin}",
+                "response.headers.Access-Control-Allow-Methods": "OPTIONS, POST,GET"
+            },
+            "backendUri": "http://localhost:8080/api/{restOfPath}"
+        }
+    }
+}

@@ -1,0 +1,28 @@
+﻿@using BookBarcodeReader.Shared
+<ul>
+
+    @if (searchResult != null)
+        @foreach (var result in searchResult)
+        {
+            <li>
+                <h4>
+                    Title: @result.Title
+                </h4>
+                <div>
+                    Description: @result.Description
+                </div>
+                <div>
+                    <img src="@result.Images.SmallThumbnail" />
+                </div>
+            </li>
+
+        }
+
+</ul>
+
+
+@code {
+    [Parameter]
+    public BarcodeLookupResult[] searchResult { get; set; }
+
+}

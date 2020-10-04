@@ -1,0 +1,41 @@
+﻿@using BookBarcodeReader.Client.Components
+@page "/"
+@inject IJSRuntime IJSRuntime
+@inject HttpClient Http
+@using BookBarcodeReader.Shared
+
+<section>
+    <BarcodeReaderComponent GetValue="((value) => SetValue(value))">
+    </BarcodeReaderComponent>
+</section>
+<section>
+    <button @onclick="searchBarcode">Search</button>
+</section>
+<section>
+
+    @if (_isSearching)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <SearchResultComponent searchResult="@results"></SearchResultComponent>
+    }
+</section>
+@code
+{
+    private string _barcodeValue = string.Empty;
+    private Boolean _isSearching = false;
+    private BarcodeLookupResult[] results;
+
+    private void SetValue(string value)
+    {
+        _barcodeValue = value;
+    }
+
+    private async Task searchBarcode()
+    {
+        _isSearching = true;
+        _isSearching = false;
+    }
+}

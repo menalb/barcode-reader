@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 
 using BookBarcodeReader.Server.Models;
 using BookBarcodeReader.Shared;
+using static BookBarcodeReader.Server.Models.GoogleApiResponse;
 
 namespace BookBarcodeReader.Server.Controllers
 {
@@ -40,25 +41,55 @@ namespace BookBarcodeReader.Server.Controllers
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(_apiConfig.Value.BaseUrl);
+
                 var response = await client.GetAsync($"books/v1/volumes?{queryString}");
                 if (response.IsSuccessStatusCode)
                 {
+
+                    var message = await response.Content.ReadAsStringAsync();
                     var gApiResponse = JsonConvert
-                        .DeserializeObject<GoogleApiResponse>(await response.Content.ReadAsStringAsync());
-                    return gApiResponse.Items.Select(item => new BarcodeLookupResult
-                    {
-                        Title = item.VolumeInfo.Title,
-                        Description = item.VolumeInfo.Description,
-                        Images = new BookImage
-                        {
-                            SmallThumbnail = item.VolumeInfo.Images.SmallThumbnail,
-                            Thumbnail = item.VolumeInfo.Images.Thumbnail
-                        }
-                    });
+                        .DeserializeObject<GoogleApiResponse>(message);
+                    return ParseResult(gApiResponse);
                 }
             }
             return null;
         }
+
+        private IEnumerable<BarcodeLookupResult> ParseResult(GoogleApiResponse result)
+        {
+            return result.Items.Select(item => new BarcodeLookupResult
+            {
+                Title = item.VolumeInfo.Title,
+                Description = item.VolumeInfo.Description,
+                Link = item.SelfLink,
+                Images = ParseImage(item.VolumeInfo.Images),
+                PublishedDate = item.VolumeInfo.PublishedDate,
+                Identifiers = ParseIdentifiers(item.VolumeInfo.IndustryIdentifiers)
+            });
+        }
+        private BookImage ParseImage(ImageLinks image)
+        {
+            if (!(image is null))
+                return new BookImage
+                {
+                    SmallThumbnail = image.SmallThumbnail,
+                    Thumbnail = image.Thumbnail
+                };
+            return null;
+        }
+
+        private IEnumerable<BookIdentifier> ParseIdentifiers(IEnumerable<IndustryIdentifiers> identifiers)
+        {
+            if (!(identifiers is null))
+                return identifiers.Select(idetifier => new BookIdentifier
+                {
+                    Type = idetifier.Type,
+                    Value = idetifier.Identifier
+                });
+            return null;
+        }
+
+
 
     }
 }

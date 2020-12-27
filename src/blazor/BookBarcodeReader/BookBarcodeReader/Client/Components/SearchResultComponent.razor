@@ -8,12 +8,33 @@
                 <h4>
                     Title: @result.Title
                 </h4>
+
+                <div>
+                    <span>
+                        Language: @result.Language
+                    </span>
+                    <span>
+
+                        Published Date: @result.PublishedDate
+                    </span>
+                </div>
+                <div>
+                    Identifiers: @FormatIdentifiers(result.Identifiers)
+                </div>
+                <div>
+                    @if (result.Images != null)
+                    {
+                        <img src="@result.Images.SmallThumbnail" />
+                    }
+                    else
+                    {
+                        <em>No Image</em>
+                    }
+                </div>
                 <div>
                     Description: @result.Description
                 </div>
-                <div>
-                    <img src="@result.Images.SmallThumbnail" />
-                </div>
+
             </li>
 
         }
@@ -25,4 +46,12 @@
     [Parameter]
     public BarcodeLookupResult[] searchResult { get; set; }
 
+    private string FormatIdentifiers(IEnumerable<BookIdentifier> identifiers)
+    {
+        if (identifiers != null)
+        {
+            return identifiers.Select(identifier => $"{identifier.Type}: {identifier.Value}").Aggregate((a, b) => $"{a}, {b}");
+        }
+        return string.Empty;
+    }
 }

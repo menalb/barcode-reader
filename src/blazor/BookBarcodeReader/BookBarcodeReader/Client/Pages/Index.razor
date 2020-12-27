@@ -5,8 +5,13 @@
 @using BookBarcodeReader.Shared
 
 <section>
-    <BarcodeReaderComponent GetValue="((value) => SetValue(value))">
-    </BarcodeReaderComponent>
+    <div>
+        <BarcodeReaderComponent GetValue="((value) => SetValue(value))">
+        </BarcodeReaderComponent>
+    </div>
+    <p>
+        Barcode: <input @bind="@_barcodeValue" />
+    </p>
 </section>
 <section>
     <button @onclick="searchBarcode">Search</button>
@@ -37,5 +42,8 @@
     {
         _isSearching = true;
         _isSearching = false;
+
+        results = await Http.GetFromJsonAsync<BarcodeLookupResult[]>($"BarcodeLookup?barcode={_barcodeValue}");
+
     }
 }

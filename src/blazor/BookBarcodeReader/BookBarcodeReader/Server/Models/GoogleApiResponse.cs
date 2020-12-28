@@ -13,6 +13,8 @@ namespace BookBarcodeReader.Server.Models
 
         public class ApiItem
         {
+            [JsonProperty("id")]
+            public string Id { get; set; }
             [JsonProperty("volumeInfo")]
             public VolumeInfo VolumeInfo { get; set; }
             [JsonProperty("selfLink")]

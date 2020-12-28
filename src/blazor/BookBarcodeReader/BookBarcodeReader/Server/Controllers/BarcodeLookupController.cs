@@ -59,6 +59,7 @@ namespace BookBarcodeReader.Server.Controllers
         private IEnumerable<BarcodeLookupResult> ParseResult(GoogleApiResponse result) =>
             result.Items.Select(item => new BarcodeLookupResult
             {
+                Id = item.Id,
                 Title = item.VolumeInfo.Title,
                 Description = item.VolumeInfo.Description,
                 Link = item.SelfLink,

@@ -1,12 +1,11 @@
+using BookBarcodeReader.Server.Infrastructure;
 using BookBarcodeReader.Server.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
+using Microsoft.OpenApi.Models;
 
 namespace BookBarcodeReader.Server
 {
@@ -23,7 +22,13 @@ namespace BookBarcodeReader.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<DbSettings>(Configuration.GetSection(nameof(DbSettings)));
             services.Configure<GoogleApiConfig>(Configuration.GetSection("GoogleAPI"));
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "BooksApi", Version = "v1" });
+            });
 
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -36,6 +41,8 @@ namespace BookBarcodeReader.Server
             {
                 app.UseDeveloperExceptionPage();
                 app.UseWebAssemblyDebugging();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Books v1"));
             }
             else
             {

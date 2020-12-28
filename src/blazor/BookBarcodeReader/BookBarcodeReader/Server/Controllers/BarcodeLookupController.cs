@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using BookBarcodeReader.Server.Models;
 using BookBarcodeReader.Shared;
 using static BookBarcodeReader.Server.Models.GoogleApiResponse;
+using BookBarcodeReader.Shared.Book;
 
 namespace BookBarcodeReader.Server.Controllers
 {
@@ -66,9 +67,9 @@ namespace BookBarcodeReader.Server.Controllers
                 Identifiers = ParseIdentifiers(item.VolumeInfo.IndustryIdentifiers)
             });
 
-        private BookImage ParseImage(ImageLinks image) =>
+        private BookImages ParseImage(ImageLinks image) =>
             !(image is null) ?
-                new BookImage
+                new BookImages
                 {
                     SmallThumbnail = image.SmallThumbnail,
                     Thumbnail = image.Thumbnail

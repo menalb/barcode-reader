@@ -55,9 +55,8 @@ namespace BookBarcodeReader.Server.Controllers
             return null;
         }
 
-        private IEnumerable<BarcodeLookupResult> ParseResult(GoogleApiResponse result)
-        {
-            return result.Items.Select(item => new BarcodeLookupResult
+        private IEnumerable<BarcodeLookupResult> ParseResult(GoogleApiResponse result) =>
+            result.Items.Select(item => new BarcodeLookupResult
             {
                 Title = item.VolumeInfo.Title,
                 Description = item.VolumeInfo.Description,
@@ -66,30 +65,22 @@ namespace BookBarcodeReader.Server.Controllers
                 PublishedDate = item.VolumeInfo.PublishedDate,
                 Identifiers = ParseIdentifiers(item.VolumeInfo.IndustryIdentifiers)
             });
-        }
-        private BookImage ParseImage(ImageLinks image)
-        {
-            if (!(image is null))
-                return new BookImage
+
+        private BookImage ParseImage(ImageLinks image) =>
+            !(image is null) ?
+                new BookImage
                 {
                     SmallThumbnail = image.SmallThumbnail,
                     Thumbnail = image.Thumbnail
-                };
-            return null;
-        }
+                }
+                : null;
 
-        private IEnumerable<BookIdentifier> ParseIdentifiers(IEnumerable<IndustryIdentifiers> identifiers)
-        {
-            if (!(identifiers is null))
-                return identifiers.Select(idetifier => new BookIdentifier
-                {
-                    Type = idetifier.Type,
-                    Value = idetifier.Identifier
-                });
-            return null;
-        }
-
-
+        private IEnumerable<BookIdentifier> ParseIdentifiers(IEnumerable<IndustryIdentifiers> identifiers) =>
+            identifiers?.Select(idetifier => new BookIdentifier
+            {
+                Type = idetifier.Type,
+                Value = idetifier.Identifier
+            });
 
     }
 }

@@ -2,6 +2,7 @@ using Bogus;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using System.Threading.Tasks;
 
 using BookBarcodeReader.Server.Core;
 using BookBarcodeReader.Shared.Book;
@@ -20,7 +21,7 @@ namespace BookBarcodeReader.Server.Tests
         }
 
         [Fact]
-        public void When_there_is_not_already_a_book_with_that_isbn_It_store()
+        public async Task When_there_is_not_already_a_book_with_that_isbn_It_store()
         {
             var isbn = "9781910055410";
             var book = GenerateBaseBook(isbn);
@@ -28,7 +29,7 @@ namespace BookBarcodeReader.Server.Tests
             var service = new BookService(_query, _command);
             _query.AddBookToReturn(ToBookEntity(book));
 
-            var result = service.Store(book);
+            var result = await service.Store(book);
 
             Assert.IsNotType<SuccessfulStoreBookResult>(result);
             Assert.DoesNotContain(_command.StoredBooks, book => book.ISBN == isbn);
@@ -71,9 +72,9 @@ namespace BookBarcodeReader.Server.Tests
         {
             _storedBooks = new List<StoreNewBookRequest>();
         }
-        public void StoreBook(StoreNewBookRequest book)
+        public Task StoreBook(StoreNewBookRequest book)
         {
-            _storedBooks.Add(book);
+            return Task.Factory.StartNew(() => _storedBooks.Add(book));
         }
 
         public IEnumerable<StoreNewBookRequest> StoredBooks => _storedBooks;
@@ -90,20 +91,20 @@ namespace BookBarcodeReader.Server.Tests
         {
             _booksToReturn.Add(book);
         }
-        public IEnumerable<BookEntity> GetAll()
+        public async Task<IEnumerable<BookEntity>> GetAll()
         {
-            return _booksToReturn;
+            return await Task.FromResult(_booksToReturn);
         }
 
-        public BookEntity GetByIsbn(string isbn)
+        public Task<BookEntity> GetByIsbn(string isbn)
         {
-            return _booksToReturn.FirstOrDefault(book => book.ISBN.ToLower() == isbn.ToLower());
+            return Task.FromResult(_booksToReturn.FirstOrDefault(book => book.ISBN.ToLower() == isbn.ToLower()));
         }
 
-        public IEnumerable<BookEntity> GetByTitle(string title)
+        public Task<IEnumerable<BookEntity>> GetByTitle(string title)
         {
-            return _booksToReturn.Where(book => book.Title.ToLower() == title.ToLower());
+            return Task.FromResult(_booksToReturn.Where(book => book.Title.ToLower() == title.ToLower()));
         }
-    }   
-   
+    }
+
 }

@@ -1,4 +1,6 @@
-﻿using BookBarcodeReader.Shared.Book;
+﻿using System.Threading.Tasks;
+
+using BookBarcodeReader.Shared.Book;
 
 namespace BookBarcodeReader.Server.Core
 {
@@ -12,11 +14,11 @@ namespace BookBarcodeReader.Server.Core
             _command = command;
         }
 
-        public StoreBookResult Store(StoreNewBookRequest book)
+        public async Task<StoreBookResult> Store(StoreNewBookRequest book)
         {
-            if (_query.GetByIsbn(book.ISBN) == null)
+            if (await _query.GetByIsbn(book.ISBN) == null)
             {
-                _command.StoreBook(book);
+                await _command.StoreBook(book);
                 return new SuccessfulStoreBookResult();
             }
             return new ISBNAlreadyStoredStoreBookResult();

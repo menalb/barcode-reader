@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using BookBarcodeReader.Shared.Book;
 
@@ -6,8 +7,8 @@ namespace BookBarcodeReader.Server.Core
 {
     public interface IBookQuery
     {
-        IEnumerable<BookEntity> GetAll();
-        IEnumerable<BookEntity> GetByTitle(string title);
-        BookEntity GetByIsbn(string isbn);
+        Task<IEnumerable<BookEntity>> GetAll();
+        Task<IEnumerable<BookEntity>> GetByTitle(string title);
+        Task<BookEntity> GetByIsbn(string isbn);
     }
 }

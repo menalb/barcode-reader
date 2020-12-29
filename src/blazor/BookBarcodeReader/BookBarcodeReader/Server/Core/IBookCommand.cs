@@ -1,10 +1,12 @@
 ﻿
+using System.Threading.Tasks;
+
 using BookBarcodeReader.Shared.Book;
 
 namespace BookBarcodeReader.Server.Core
 {
     public interface IBookCommand
     {
-        void StoreBook(StoreNewBookRequest book);
+        Task StoreBook(StoreNewBookRequest book);
     }
 }

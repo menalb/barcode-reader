@@ -13,11 +13,13 @@ namespace BookBarcodeReader.Server.Tests
     {
         private readonly BookQueryFake _query;
         private readonly BookCommandFake _command;
+        private readonly BookService _service;
 
         public Given_a_storeBook_request()
         {
             _query = new BookQueryFake();
             _command = new BookCommandFake();
+            _service = new BookService(_query, _command);
         }
 
         [Fact]
@@ -26,13 +28,24 @@ namespace BookBarcodeReader.Server.Tests
             var isbn = "9781910055410";
             var book = GenerateBaseBook(isbn);
 
-            var service = new BookService(_query, _command);
             _query.AddBookToReturn(ToBookEntity(book));
 
-            var result = await service.Store(book);
+            var result = await _service.Store(book);
 
             Assert.IsNotType<SuccessfulStoreBookResult>(result);
             Assert.DoesNotContain(_command.StoredBooks, book => book.ISBN == isbn);
+        }
+
+        [Fact]
+        public async Task Adding_a_book_It_should_return_the_book_with_the_new_id()
+        {
+            var book = GenerateBaseBook();
+
+            var result = await _service.Store(book);
+
+            Assert.IsType<SuccessfulStoreBookResult>(result);
+            Assert.Contains(_command.StoredBooks, b => b.ISBN == book.ISBN);
+            Assert.NotEmpty((result as SuccessfulStoreBookResult).Book.Id);
         }
 
 
@@ -72,9 +85,18 @@ namespace BookBarcodeReader.Server.Tests
         {
             _storedBooks = new List<StoreNewBookRequest>();
         }
-        public Task StoreBook(StoreNewBookRequest book)
+        public Task<BookEntity> StoreBook(StoreNewBookRequest book)
         {
-            return Task.Factory.StartNew(() => _storedBooks.Add(book));
+            return Task.Factory.StartNew(() =>
+            {
+                _storedBooks.Add(book);
+                return new BookEntity
+                {
+                    Title = book.Title,
+                    ISBN = book.ISBN,
+                    Id = "AAAABBBCCC"
+                };
+            });
         }
 
         public IEnumerable<StoreNewBookRequest> StoredBooks => _storedBooks;

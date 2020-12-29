@@ -1,11 +1,9 @@
-﻿using BookBarcodeReader.Server.Core;
-using BookBarcodeReader.Server.Infrastructure;
-using BookBarcodeReader.Shared.Book;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
 using System.Threading.Tasks;
+
+using BookBarcodeReader.Server.Core;
+using BookBarcodeReader.Shared.Book;
 
 namespace BookBarcodeReader.Server.Controllers
 {
@@ -28,7 +26,6 @@ namespace BookBarcodeReader.Server.Controllers
             var book = await _service.Store(newBookRequest);
             return Ok(book);
         }
-
       
     }
 }

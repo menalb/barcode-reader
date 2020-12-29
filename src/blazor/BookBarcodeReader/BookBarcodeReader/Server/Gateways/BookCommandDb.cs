@@ -16,10 +16,11 @@ namespace BookBarcodeReader.Server.Gateways
                .GetDatabase(dbSettings.DatabaseName)
                .GetCollection<BookEntity>(dbSettings.CollectionName);
 
-        public Task StoreBook(StoreNewBookRequest newBook)
+        public async Task<BookEntity> StoreBook(StoreNewBookRequest newBook)
         {
             var book = MapStoreRequest(newBook);
-            return _books.InsertOneAsync(book);
+            await _books.InsertOneAsync(book);
+            return book;
         }
 
         private BookEntity MapStoreRequest(StoreNewBookRequest request) =>

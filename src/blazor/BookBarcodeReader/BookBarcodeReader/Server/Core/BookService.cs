@@ -18,8 +18,8 @@ namespace BookBarcodeReader.Server.Core
         {
             if (await _query.GetByIsbn(book.ISBN) == null)
             {
-                await _command.StoreBook(book);
-                return new SuccessfulStoreBookResult();
+                var storedBook = await _command.StoreBook(book);
+                return new SuccessfulStoreBookResult(storedBook);
             }
             return new ISBNAlreadyStoredStoreBookResult();
         }

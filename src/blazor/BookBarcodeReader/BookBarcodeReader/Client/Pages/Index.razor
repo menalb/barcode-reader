@@ -3,19 +3,35 @@
 @inject IJSRuntime IJSRuntime
 @inject HttpClient Http
 @using BookBarcodeReader.Shared
+@using System.Text.Json
 
 <section>
-    <div>
+    <div class="row p-1">
         <BarcodeReaderComponent GetValue="((value) => SetValue(value))">
         </BarcodeReaderComponent>
     </div>
-    <p>
-        Barcode: <input @bind="@_barcodeValue" />
+    <p class="row p-1 form-group">
+        <span class="col-6">
+            <label for="barcodeInput">Barcode: </label>
+             <input id="barcodeInput" @bind="@_barcodeValue" />
+        </span>
+        <span class="col-3">
+            <button type="button" class="btn btn-light" @onclick="searchBarcode">Search</button>
+        </span>
+        <span class="col-3">
+            @if (_cuttentSelected != null)
+            {
+                <button type="button" class="btn btn-light" @onclick="()=>storeBook(_cuttentSelected)">Store</button>
+            }
+        </span>
     </p>
 </section>
-<section>
-    <button @onclick="searchBarcode">Search</button>
-</section>
+@if (!string.IsNullOrEmpty(_storeResultMessage))
+{
+    <section>
+        @_storeResultMessage
+    </section>
+}
 <section>
 
     @if (_isSearching)
@@ -24,14 +40,17 @@
     }
     else
     {
-        <SearchResultComponent searchResult="@results"></SearchResultComponent>
+        <SearchResultComponent searchResult="@results" selectItem="((selectedResult)=> selectedChange(selectedResult))"></SearchResultComponent>
     }
 </section>
+
 @code
 {
     private string _barcodeValue = string.Empty;
     private Boolean _isSearching = false;
     private BarcodeLookupResult[] results;
+    private BarcodeLookupResult _cuttentSelected;
+    private string _storeResultMessage;
 
     private void SetValue(string value)
     {
@@ -45,5 +64,30 @@
 
         results = await Http.GetFromJsonAsync<BarcodeLookupResult[]>($"BarcodeLookup?barcode={_barcodeValue}");
 
+    }
+
+    private void selectedChange(BarcodeLookupResult selected)
+    {
+        _cuttentSelected = selected;
+    }
+
+    private async Task storeBook(BarcodeLookupResult bookToStore)
+    {
+        var response = await Http.PostAsJsonAsync<BarcodeLookupResult>("book", bookToStore);
+        if (response.IsSuccessStatusCode)
+        {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            };
+
+            var book = JsonSerializer.Deserialize<BookBarcodeReader.Shared.Book.BookEntity>
+                (await response.Content.ReadAsStringAsync(), options);
+            _storeResultMessage = "Added book: " + book.Id;
+        }
+        else
+        {
+            _storeResultMessage = response.StatusCode.ToString();
+        }
     }
 }

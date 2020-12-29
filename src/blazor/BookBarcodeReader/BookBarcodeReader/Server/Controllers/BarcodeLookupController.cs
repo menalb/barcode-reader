@@ -63,6 +63,7 @@ namespace BookBarcodeReader.Server.Controllers
                 Title = item.VolumeInfo.Title,
                 Description = item.VolumeInfo.Description,
                 Link = item.SelfLink,
+                ISBN = ParseIdentifiers(item.VolumeInfo.IndustryIdentifiers).Where(id=>id.Type =="ISBN_13").FirstOrDefault().Value,
                 Images = ParseImage(item.VolumeInfo.Images),
                 PublishedDate = item.VolumeInfo.PublishedDate,
                 Identifiers = ParseIdentifiers(item.VolumeInfo.IndustryIdentifiers)

@@ -25,14 +25,14 @@ namespace BookBarcodeReader.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Store(AddNewBookRequest newBookRequest)
+        public async Task<IActionResult> Store(StoreNewBookRequest newBookRequest)
         {
             var book = MapStoreRequest(newBookRequest);
             await _books.InsertOneAsync(book);
             return Ok(book);
         }
 
-        private BookEntity MapStoreRequest(AddNewBookRequest request)=>
+        private BookEntity MapStoreRequest(StoreNewBookRequest request)=>
             new BookEntity
             {
                 Description = request.Description,

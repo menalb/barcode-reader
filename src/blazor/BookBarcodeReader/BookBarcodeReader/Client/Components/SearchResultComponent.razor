@@ -1,11 +1,11 @@
 ﻿@using BookBarcodeReader.Shared
 @using BookBarcodeReader.Shared.Book
-<ul>
+<ul class="list-group">
 
     @if (searchResult != null)
         @foreach (var result in searchResult)
         {
-            <li>
+            <li @onclick="()=>Select(result)" class="@ItemCss(result)">
                 <h4>
                     Title: @result.Title
                 </h4>
@@ -42,10 +42,15 @@
 
 </ul>
 
-
 @code {
     [Parameter]
     public BarcodeLookupResult[] searchResult { get; set; }
+
+    [Parameter]
+    public EventCallback<BarcodeLookupResult> selectItem { get; set; }
+
+
+    private BarcodeLookupResult selected { get; set; }
 
     private string FormatIdentifiers(IEnumerable<BookIdentifier> identifiers)
     {
@@ -54,5 +59,17 @@
             return identifiers.Select(identifier => $"{identifier.Type}: {identifier.Value}").Aggregate((a, b) => $"{a}, {b}");
         }
         return string.Empty;
+    }
+
+    private string ItemCss(BarcodeLookupResult item)
+    {
+        var css = "list-group-item";
+        return (selected != null && item.Id == selected.Id) ? css + " active" : css;
+    }
+
+    private void Select(BarcodeLookupResult result)
+    {
+        selected = result;
+        selectItem.InvokeAsync(selected);
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace BookBarcodeReader.Shared.Book
 {
-    public class AddNewBookRequest : BookBaseEntity
+    public class StoreNewBookRequest : BookBaseEntity
     {
 
     }

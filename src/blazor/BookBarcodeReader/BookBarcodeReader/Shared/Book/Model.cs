@@ -1,10 +1,11 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Collections.Generic;
+using System.Dynamic;
 
 namespace BookBarcodeReader.Shared.Book
 {
-    public class BookEntity: BookBaseEntity
+    public class BookEntity : BookBaseEntity
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -17,6 +18,7 @@ namespace BookBarcodeReader.Shared.Book
         public string Link { get; set; }
         public string Language { get; set; }
         public string PublishedDate { get; set; }
+        public string ISBN { get; set; }
         public IEnumerable<BookIdentifier> Identifiers { get; set; }
         public BookImages Images { get; set; }
     }

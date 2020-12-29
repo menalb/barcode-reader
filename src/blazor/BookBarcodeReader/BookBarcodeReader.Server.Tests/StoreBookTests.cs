@@ -1,30 +1,37 @@
 using Bogus;
-using BookBarcodeReader.Server.Models;
-using BookBarcodeReader.Shared.Book;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+
+using BookBarcodeReader.Server.Core;
+using BookBarcodeReader.Shared.Book;
 
 namespace BookBarcodeReader.Server.Tests
 {
     public class Given_a_storeBook_request
     {
+        private readonly BookQueryFake _query;
+        private readonly BookCommandFake _command;
+
+        public Given_a_storeBook_request()
+        {
+            _query = new BookQueryFake();
+            _command = new BookCommandFake();
+        }
+
         [Fact]
         public void When_there_is_not_already_a_book_with_that_isbn_It_store()
         {
             var isbn = "9781910055410";
             var book = GenerateBaseBook(isbn);
 
-            var booksQuery = new BookQueryFake();
-            var bookCommand = new BookCommandFake();
-            var service = new BookService(booksQuery, bookCommand);
-            booksQuery.AddBookToReturn(ToBookEntity(book as BookBaseEntity));
+            var service = new BookService(_query, _command);
+            _query.AddBookToReturn(ToBookEntity(book));
 
             var result = service.Store(book);
 
             Assert.IsNotType<SuccessfulStoreBookResult>(result);
-            Assert.DoesNotContain(bookCommand.StoredBooks, book => book.ISBN == isbn);
+            Assert.DoesNotContain(_command.StoredBooks, book => book.ISBN == isbn);
         }
 
 
@@ -56,31 +63,6 @@ namespace BookBarcodeReader.Server.Tests
             };
 
     }
-
-    public class BookService
-    {
-        private readonly IBookQuery _query;
-        private readonly IBookCommand _command;
-        public BookService(IBookQuery query, IBookCommand command)
-        {
-            _query = query;
-            _command = command;
-        }
-
-        public StoreBookResult Store(StoreNewBookRequest book)
-        {
-            if (_query.GetByIsbn(book.ISBN) == null)
-            {
-                _command.StoreBook(book);
-                return new SuccessfulStoreBookResult();
-            }
-            return new ISBNAlreadyStoredStoreBookResult();
-        }
-    }
-
-    public abstract class StoreBookResult { }
-    public class SuccessfulStoreBookResult : StoreBookResult { }
-    public class ISBNAlreadyStoredStoreBookResult : StoreBookResult { }
 
     public class BookCommandFake : IBookCommand
     {
@@ -122,15 +104,6 @@ namespace BookBarcodeReader.Server.Tests
         {
             return _booksToReturn.Where(book => book.Title.ToLower() == title.ToLower());
         }
-    }
-    public interface IBookCommand
-    {
-        void StoreBook(StoreNewBookRequest book);
-    }
-    public interface IBookQuery
-    {
-        IEnumerable<BookEntity> GetAll();
-        IEnumerable<BookEntity> GetByTitle(string title);
-        BookEntity GetByIsbn(string isbn);
-    }
+    }   
+   
 }

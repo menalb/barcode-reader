@@ -1,3 +1,5 @@
+using BookBarcodeReader.Server.Core;
+using BookBarcodeReader.Server.Gateways;
 using BookBarcodeReader.Server.Infrastructure;
 using BookBarcodeReader.Server.Models;
 using Microsoft.AspNetCore.Builder;
@@ -5,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 namespace BookBarcodeReader.Server
@@ -23,7 +26,11 @@ namespace BookBarcodeReader.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<DbSettings>(Configuration.GetSection(nameof(DbSettings)));
+            services.AddSingleton(sp => sp.GetRequiredService<IOptions<DbSettings>>().Value);
             services.Configure<GoogleApiConfig>(Configuration.GetSection("GoogleAPI"));
+            services.AddScoped<IBookQuery, BookQueryDb>();
+            services.AddScoped<IBookCommand, BookCommandDb>();
+            services.AddScoped<BookService>();
 
             services.AddSwaggerGen(c =>
             {

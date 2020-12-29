@@ -1,4 +1,5 @@
-﻿using BookBarcodeReader.Server.Infrastructure;
+﻿using BookBarcodeReader.Server.Core;
+using BookBarcodeReader.Server.Infrastructure;
 using BookBarcodeReader.Shared.Book;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -12,36 +13,22 @@ namespace BookBarcodeReader.Server.Controllers
     [Route("book")]
     public class BookCommandController : ControllerBase
     {
-        private readonly ILogger<BookCommandController> logger;
-        private readonly IMongoCollection<BookEntity> _books;
+        private readonly ILogger<BookCommandController> _logger;
+        private readonly BookService _service;
 
-        public BookCommandController(ILogger<BookCommandController> logger, IOptions<DbSettings> dbSettings)
+        public BookCommandController(ILogger<BookCommandController> logger, BookService service)
         {
-            _books = new MongoClient(dbSettings.Value.ConnectionString)
-                .GetDatabase(dbSettings.Value.DatabaseName)
-                .GetCollection<BookEntity>(dbSettings.Value.CollectionName);
-
-            this.logger = logger;
+            _service = service;
+            _logger = logger;
         }
 
         [HttpPost]
         public async Task<IActionResult> Store(StoreNewBookRequest newBookRequest)
         {
-            var book = MapStoreRequest(newBookRequest);
-            await _books.InsertOneAsync(book);
+            var book = await _service.Store(newBookRequest);
             return Ok(book);
         }
 
-        private BookEntity MapStoreRequest(StoreNewBookRequest request)=>
-            new BookEntity
-            {
-                Description = request.Description,
-                Identifiers = request.Identifiers,
-                Images = request.Images,
-                Language = request.Language,
-                Link = request.Link,
-                PublishedDate = request.PublishedDate,
-                Title = request.Title
-            };
+      
     }
 }

@@ -1,9 +1,9 @@
-﻿using BookBarcodeReader.Server.Core;
+﻿using MongoDB.Driver;
+using System.Threading.Tasks;
+
+using BookBarcodeReader.Server.Core;
 using BookBarcodeReader.Server.Infrastructure;
 using BookBarcodeReader.Shared.Book;
-using MongoDB.Driver;
-using System;
-using System.Threading.Tasks;
 
 namespace BookBarcodeReader.Server.Gateways
 {
@@ -32,7 +32,12 @@ namespace BookBarcodeReader.Server.Gateways
               Language = request.Language,
               Link = request.Link,
               PublishedDate = request.PublishedDate,
-              Title = request.Title
+              Title = request.Title,
+              ISBN = request.ISBN,
+              Authors = request.Authors,
+              Categories = request.Categories,
+              Publisher = request.Publisher,
+              SubTitle = request.SubTitle
           };
     }
 }

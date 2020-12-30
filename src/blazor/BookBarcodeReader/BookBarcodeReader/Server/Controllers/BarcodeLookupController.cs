@@ -31,7 +31,8 @@ namespace BookBarcodeReader.Server.Controllers
         [HttpGet]
         public async Task<IEnumerable<BarcodeLookupResult>> Get(string barcode)
         {
-            return await GetISBNInfo(barcode);
+            var books = await GetISBNInfo(barcode);
+            return books != null ? books : new List<BarcodeLookupResult>();
         }
 
 
@@ -57,18 +58,31 @@ namespace BookBarcodeReader.Server.Controllers
         }
 
         private IEnumerable<BarcodeLookupResult> ParseResult(GoogleApiResponse result) =>
-            result.Items.Select(item => new BarcodeLookupResult
+            result.Items?.Select(item => new BarcodeLookupResult
             {
                 Id = item.Id,
                 Title = item.VolumeInfo.Title,
                 Description = item.VolumeInfo.Description,
                 Link = item.SelfLink,
-                ISBN = ParseIdentifiers(item.VolumeInfo.IndustryIdentifiers).Where(id=>id.Type =="ISBN_13").FirstOrDefault().Value,
+                ISBN = ParseISBN(ParseIdentifiers(item.VolumeInfo.IndustryIdentifiers)),
                 Images = ParseImage(item.VolumeInfo.Images),
                 PublishedDate = item.VolumeInfo.PublishedDate,
-                Identifiers = ParseIdentifiers(item.VolumeInfo.IndustryIdentifiers)
+                Identifiers = ParseIdentifiers(item.VolumeInfo.IndustryIdentifiers),
+                SubTitle = item.VolumeInfo.SubTitle,
+                Publisher = item.VolumeInfo.Publisher,
+                Language = item.VolumeInfo.Language,
+                Categories = item.VolumeInfo.Categories?.Select(category => new CategoryInfo { Name = category }),
+                Authors = item.VolumeInfo.Authors?.Select(author => new AuthorInfo { Name = author }),
             });
-
+        private string ParseISBN(IEnumerable<BookIdentifier> identifiers)
+        {
+            var isbn = identifiers.FirstOrDefault(id => id.Type == "ISBN_13");
+            if (isbn != null)
+            {
+                return isbn.Value;
+            }
+            return identifiers?.FirstOrDefault().Value;
+        }
         private BookImages ParseImage(ImageLinks image) =>
             !(image is null) ?
                 new BookImages

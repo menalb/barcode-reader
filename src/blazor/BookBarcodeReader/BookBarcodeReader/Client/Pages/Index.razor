@@ -4,6 +4,7 @@
 @inject HttpClient Http
 @using BookBarcodeReader.Shared
 @using System.Text.Json
+@using BookBarcodeReader.Shared.Book
 
 <section>
     <div class="row p-1">
@@ -13,19 +14,31 @@
     <p class="row p-1 form-group">
         <span class="col-6">
             <label for="barcodeInput">Barcode: </label>
-             <input id="barcodeInput" @bind="@_barcodeValue" />
+            <input id="barcodeInput" @bind="@_barcodeValue" />
         </span>
-        <span class="col-3">
+        <span class="col-2">
             <button type="button" class="btn btn-light" @onclick="searchBarcode">Search</button>
         </span>
-        <span class="col-3">
+        <span class="col-2">
+            @if (!string.IsNullOrEmpty(_barcodeValue))
+            {
+                <button type="button" class="btn btn-light" @onclick="()=> { _addNew = !_addNew; }">Add New</button>
+            }
+        </span>
+        <span class="col-2">
             @if (_cuttentSelected != null)
             {
-                <button type="button" class="btn btn-light" @onclick="()=>storeBook(_cuttentSelected)">Store</button>
+                <button type="button" class="btn btn-light" @onclick="()=>storeBookFromLookup(_cuttentSelected)">Store</button>
             }
         </span>
     </p>
 </section>
+@if (_addNew)
+{
+    <section>
+        <AddBookComponent AddBook="(book)=>storeNewBook(book)"></AddBookComponent>
+    </section>
+}
 @if (!string.IsNullOrEmpty(_storeResultMessage))
 {
     <section>
@@ -48,6 +61,7 @@
 {
     private string _barcodeValue = string.Empty;
     private Boolean _isSearching = false;
+    private Boolean _addNew = false;
     private BarcodeLookupResult[] results;
     private BarcodeLookupResult _cuttentSelected;
     private string _storeResultMessage;
@@ -60,9 +74,10 @@
     private async Task searchBarcode()
     {
         _isSearching = true;
-        _isSearching = false;
 
         results = await Http.GetFromJsonAsync<BarcodeLookupResult[]>($"BarcodeLookup?barcode={_barcodeValue}");
+
+        _isSearching = false;
 
     }
 
@@ -71,9 +86,20 @@
         _cuttentSelected = selected;
     }
 
-    private async Task storeBook(BarcodeLookupResult bookToStore)
+    private async Task storeBookFromLookup(BarcodeLookupResult bookToStore)
     {
         var response = await Http.PostAsJsonAsync<BarcodeLookupResult>("book", bookToStore);
+        await ProcessStoreBookResponse(response);
+    }
+
+    private async Task storeNewBook(StoreNewBookRequest bookToStore)
+    {
+        var response = await Http.PostAsJsonAsync<StoreNewBookRequest>("book", bookToStore);
+        await ProcessStoreBookResponse(response);
+    }
+
+    private async Task ProcessStoreBookResponse(HttpResponseMessage response)
+    {
         if (response.IsSuccessStatusCode)
         {
             var options = new JsonSerializerOptions

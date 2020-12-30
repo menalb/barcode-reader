@@ -23,9 +23,18 @@ namespace BookBarcodeReader.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> Store(StoreNewBookRequest newBookRequest)
         {
-            var book = await _service.Store(newBookRequest);
-            return Ok(book);
+            var result = await _service.Store(newBookRequest);
+            return PareStoreResult(result);
         }
-      
+
+        public IActionResult PareStoreResult(StoreBookResult result)
+        {
+            switch (result)
+            {
+                case SuccessfulStoreBookResult okResult: return Ok(okResult.Book);
+                case ISBNAlreadyStoredStoreBookResult _: return Conflict("ISBN");
+                default: return StatusCode(500); ;
+            }
+        }
     }
 }

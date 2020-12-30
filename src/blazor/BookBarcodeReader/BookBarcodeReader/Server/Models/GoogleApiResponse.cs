@@ -28,12 +28,20 @@ namespace BookBarcodeReader.Server.Models
         {
             [JsonProperty("title")]
             public string Title { get; set; }
+            [JsonProperty("subtitle")]
+            public string SubTitle { get; set; }
             [JsonProperty("description")]
             public string Description { get; set; }
             [JsonProperty("imageLinks")]
             public ImageLinks Images { get; set; }
             [JsonProperty("language")]
             public string Language { get; set; }
+            [JsonProperty("authors")]
+            public string[] Authors { get; set; }
+            [JsonProperty("categories")]
+            public string[] Categories { get; set; }
+            [JsonProperty("publisher")]
+            public string Publisher { get; set; }
             [JsonProperty("industryIdentifiers")]
             public IEnumerable<IndustryIdentifiers> IndustryIdentifiers { get; set; }
             [JsonProperty("publishedDate")]
@@ -55,6 +63,8 @@ namespace BookBarcodeReader.Server.Models
             [JsonProperty("identifier")]
             public string Identifier { get; set; }
         }
+
+
 
     }
 }

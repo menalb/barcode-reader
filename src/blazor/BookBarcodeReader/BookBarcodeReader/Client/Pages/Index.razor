@@ -16,27 +16,31 @@
             <label for="barcodeInput">Barcode: </label>
             <input id="barcodeInput" @bind="@_barcodeValue" />
         </span>
-        <span class="col-2">
+        <span class=" col-2">
             <button type="button" class="btn btn-light" @onclick="searchBarcode">Search</button>
         </span>
         <span class="col-2">
             @if (!string.IsNullOrEmpty(_barcodeValue))
             {
-                <button type="button" class="btn btn-light" @onclick="()=> { _addNew = !_addNew; }">Add New</button>
+                <button type="button"
+                        class="btn btn-light"
+                        @onclick="()=> { _addNew = !_addNew; }">
+                    Add New
+                </button>
             }
         </span>
-        <span class="col-2">
+        @*<span class="col-2">
             @if (_cuttentSelected != null)
             {
                 <button type="button" class="btn btn-light" @onclick="()=>storeBookFromLookup(_cuttentSelected)">Store</button>
             }
-        </span>
+        </span>*@
     </p>
 </section>
 @if (_addNew)
 {
     <section>
-        <AddBookComponent AddBook="(book)=>storeNewBook(book)"></AddBookComponent>
+        <AddNewBookComponent Book="_cuttentSelected" SubmitBook="(book)=>storeNewBook(book)"></AddNewBookComponent>
     </section>
 }
 @if (!string.IsNullOrEmpty(_storeResultMessage))
@@ -47,6 +51,10 @@
 }
 <section>
 
+    @if (_isUpdating)
+    {
+        <p><em>Updating...</em></p>
+    }
     @if (_isSearching)
     {
         <p><em>Loading...</em></p>
@@ -61,24 +69,27 @@
 {
     private string _barcodeValue = string.Empty;
     private Boolean _isSearching = false;
+    private Boolean _isUpdating = false;
     private Boolean _addNew = false;
     private BarcodeLookupResult[] results;
     private BarcodeLookupResult _cuttentSelected;
+    private BookModel bookModel = null;
     private string _storeResultMessage;
 
     private void SetValue(string value)
     {
         _barcodeValue = value;
+        results = null;
     }
 
     private async Task searchBarcode()
     {
+        _storeResultMessage = string.Empty;
         _isSearching = true;
 
         results = await Http.GetFromJsonAsync<BarcodeLookupResult[]>($"BarcodeLookup?barcode={_barcodeValue}");
 
         _isSearching = false;
-
     }
 
     private void selectedChange(BarcodeLookupResult selected)
@@ -86,14 +97,17 @@
         _cuttentSelected = selected;
     }
 
-    private async Task storeBookFromLookup(BarcodeLookupResult bookToStore)
-    {
-        var response = await Http.PostAsJsonAsync<BarcodeLookupResult>("book", bookToStore);
-        await ProcessStoreBookResponse(response);
-    }
+    //private async Task storeBookFromLookup(BarcodeLookupResult bookToStore)
+    //{
+    //    //_isUpdating = true;
+    //    //var response = await Http.PostAsJsonAsync<BarcodeLookupResult>("book", bookToStore);
+    //    //await ProcessStoreBookResponse(response);
+
+    //}
 
     private async Task storeNewBook(StoreNewBookRequest bookToStore)
     {
+        _isUpdating = true;
         var response = await Http.PostAsJsonAsync<StoreNewBookRequest>("book", bookToStore);
         await ProcessStoreBookResponse(response);
     }
@@ -110,10 +124,20 @@
             var book = JsonSerializer.Deserialize<BookBarcodeReader.Shared.Book.BookEntity>
                 (await response.Content.ReadAsStringAsync(), options);
             _storeResultMessage = "Added book: " + book.Id;
+
+            _addNew = false;
         }
         else
         {
             _storeResultMessage = response.StatusCode.ToString();
         }
+        _isUpdating = false;
     }
+
+    //private StoreNewBookRequest ParseBookModelToStore(BookModel bookModel)
+    //{
+
+    //}
+
+
 }

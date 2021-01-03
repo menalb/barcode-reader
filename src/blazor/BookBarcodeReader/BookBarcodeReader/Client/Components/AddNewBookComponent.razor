@@ -1,0 +1,81 @@
+﻿@using BookBarcodeReader.Shared
+@using BookBarcodeReader.Shared.Book
+<h3>Add New Book</h3>
+
+<section>
+    <BookFormComponent bookModel="bookModel" SubmitBook="(book)=>Submit(book)"></BookFormComponent>
+</section>
+
+@code {
+
+    [Parameter]
+    public EventCallback<StoreNewBookRequest> SubmitBook { get; set; }
+
+    [Parameter]
+    public BarcodeLookupResult Book { get; set; } = null;
+
+    private BookModel bookModel;
+
+    protected override void OnInitialized()
+    {
+        if (Book is null)
+        {
+            bookModel = new BookModel();
+        }
+        else
+        {
+            bookModel = new BookModel
+            {
+                Title = Book.Title,
+                SubTitle = Book.SubTitle,
+                Description = Book.Description,
+                AuthorsInput = Book.Authors?.Select(a => a.Name).Aggregate((a, b) => $"{a},{b}"),
+                CategoriesInput = Book.Categories?.Select(a => a.Name).Aggregate((a, b) => $"{a},{b}"),
+                IdentifiersInput = Book.Identifiers?.Select(a => $"{a.Type}:{a.Value}").Aggregate((a, b) => $"{a},{b}"),
+                Language = Book.Language,
+                Images = Book.Images,
+                Link = Book.Link,
+                PublishedDate = Book.PublishedDate,
+                Publisher = Book.Publisher,
+            };
+        }
+    }
+
+    private void Submit(BookModel bookModel)
+    {
+        var identifiers = bookModel.IdentifiersInput.Split(",").Select(a => ParseBookIdentifier(a));
+        var newBook = new StoreNewBookRequest
+        {
+            Title = bookModel.Title,
+            Language = bookModel.Language,
+            Publisher = bookModel.Publisher,
+            PublishedDate = bookModel.PublishedDate,
+            SubTitle = bookModel.SubTitle,
+            Description = bookModel.Description,
+            Authors = bookModel.AuthorsInput.Split(",").Select(a => new AuthorInfo { Name = a.Trim() }),
+            Categories = bookModel.CategoriesInput.Split(",").Select(a => new CategoryInfo { Name = a.Trim() }),
+            Identifiers = identifiers,
+            ISBN = ParseISBN(identifiers),
+            Images = bookModel.Images,
+            Link= bookModel.Link
+        };
+
+        SubmitBook.InvokeAsync(newBook);
+    }
+
+    private BookIdentifier ParseBookIdentifier(string identifierInput)
+    {
+        var splitted = identifierInput.Split(":");
+        return new BookIdentifier { Type = splitted[0], Value = splitted[1] };
+    }
+
+    private string ParseISBN(IEnumerable<BookIdentifier> identifiers)
+    {
+        var isbn = identifiers.FirstOrDefault(id => id.Type == "ISBN_13");
+        if (isbn != null)
+        {
+            return isbn.Value;
+        }
+        return identifiers?.FirstOrDefault().Value;
+    }
+}

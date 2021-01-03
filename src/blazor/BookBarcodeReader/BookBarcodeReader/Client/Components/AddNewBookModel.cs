@@ -1,9 +1,10 @@
-﻿using BookBarcodeReader.Shared.Book;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+
+using BookBarcodeReader.Shared.Book;
 
 namespace BookBarcodeReader.Client.Components
 {
-    public class AddNewBookModel : BookBaseEntity
+    public class BookModel : BookBaseEntity
     {
         [Required]
         public new string Title { get; set; }
@@ -11,5 +12,15 @@ namespace BookBarcodeReader.Client.Components
         public string CategoriesInput { get; set; }
         [Required]
         public string IdentifiersInput { get; set; }
+    }
+
+    public class AddNewBookModel : BookModel
+    {
+
+    }
+    public class EditBookModel : BookModel
+    {
+        [Required]
+        public string Id { get; set; }
     }
 }

@@ -1,6 +1,5 @@
 ﻿@using BookBarcodeReader.Shared.Book
 
-<h4>Add New Book</h4>
 <EditForm Model="@bookModel" OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
@@ -61,43 +60,13 @@
 
 @code {
     [Parameter]
-    public EventCallback<StoreNewBookRequest> AddBook { get; set; }
+    public EventCallback<BookModel> SubmitBook { get; set; }
 
-    AddNewBookModel bookModel = new AddNewBookModel();
+    [Parameter]
+    public BookModel bookModel { get; set; }
 
     private void HandleValidSubmit()
     {
-        var identifiers = bookModel.IdentifiersInput.Split(",").Select(a => ParseBookIdentifier(a));
-        var book = new StoreNewBookRequest
-        {
-            Title = bookModel.Title,
-            Language = bookModel.Language,
-            Publisher = bookModel.Publisher,
-            PublishedDate = bookModel.PublishedDate,
-            SubTitle = bookModel.SubTitle,
-            Description = bookModel.Description,
-            Authors = bookModel.AuthorsInput.Split(",").Select(a => new AuthorInfo { Name = a.Trim() }),
-            Categories = bookModel.CategoriesInput.Split(",").Select(a => new CategoryInfo { Name = a.Trim() }),
-            Identifiers = identifiers,
-            ISBN = ParseISBN(identifiers)
-        };
-        AddBook.InvokeAsync(book);
-
-    }
-
-    private BookIdentifier ParseBookIdentifier(string identifierInput)
-    {
-        var splitted = identifierInput.Split(":");
-        return new BookIdentifier { Type = splitted[0], Value = splitted[1] };
-    }
-
-    private string ParseISBN(IEnumerable<BookIdentifier> identifiers)
-    {
-        var isbn = identifiers.FirstOrDefault(id => id.Type == "ISBN_13");
-        if (isbn != null)
-        {
-            return isbn.Value;
-        }
-        return identifiers?.FirstOrDefault().Value;
+        SubmitBook.InvokeAsync(bookModel);
     }
 }

@@ -1,7 +1,7 @@
-﻿using BookBarcodeReader.Server.Core;
+﻿using BookBarcodeReader.Server.Book;
 using BookBarcodeReader.Server.Infrastructure;
 using BookBarcodeReader.Shared.Book;
-using Microsoft.Extensions.Primitives;
+
 using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Threading.Tasks;

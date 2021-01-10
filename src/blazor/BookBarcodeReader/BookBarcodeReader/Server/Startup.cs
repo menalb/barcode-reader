@@ -1,4 +1,4 @@
-using BookBarcodeReader.Server.Core;
+using BookBarcodeReader.Server.Book;
 using BookBarcodeReader.Server.Gateways;
 using BookBarcodeReader.Server.Infrastructure;
 using BookBarcodeReader.Server.Models;

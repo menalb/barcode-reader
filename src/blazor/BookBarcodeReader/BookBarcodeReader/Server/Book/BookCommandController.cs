@@ -2,10 +2,9 @@
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
-using BookBarcodeReader.Server.Core;
 using BookBarcodeReader.Shared.Book;
 
-namespace BookBarcodeReader.Server.Controllers
+namespace BookBarcodeReader.Server.Book
 {
     [ApiController]
     [Route("book")]

@@ -2,7 +2,7 @@
 
 using BookBarcodeReader.Shared.Book;
 
-namespace BookBarcodeReader.Server.Core
+namespace BookBarcodeReader.Server.Book
 {
     public class BookService
     {

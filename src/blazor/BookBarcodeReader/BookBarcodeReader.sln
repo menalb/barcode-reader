@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookBarcodeReader.Shared", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4F3E8E15-7918-4040-AAF7-6CFA30B86182}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookBarcodeReader.Server.Tests", "BookBarcodeReader.Server.Tests\BookBarcodeReader.Server.Tests.csproj", "{C3B6FB85-DD81-443D-98D0-266FCF21468E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookBarcodeReader.Server.Tests", "BookBarcodeReader.Server.Tests\BookBarcodeReader.Server.Tests.csproj", "{C3B6FB85-DD81-443D-98D0-266FCF21468E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

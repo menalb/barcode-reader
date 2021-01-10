@@ -4,7 +4,7 @@ using System.Linq;
 using Xunit;
 using System.Threading.Tasks;
 
-using BookBarcodeReader.Server.Core;
+using BookBarcodeReader.Server.Book;
 using BookBarcodeReader.Shared.Book;
 
 namespace BookBarcodeReader.Server.Tests
@@ -51,7 +51,7 @@ namespace BookBarcodeReader.Server.Tests
 
         private StoreNewBookRequest GenerateBaseBook(string isbn = "") =>
          new Faker<StoreNewBookRequest>()
-            .StrictMode(true)
+            .StrictMode(false)
             .RuleFor(p => p.ISBN, f => string.IsNullOrEmpty(isbn) ? f.Commerce.Ean13() : isbn)
             .RuleFor(p => p.Title, f => f.Name.Random.AlphaNumeric(10))
             .RuleFor(p => p.Description, f => f.Lorem.Random.AlphaNumeric(100))

@@ -25,22 +25,16 @@
                 <button type="button"
                         class="btn btn-light"
                         @onclick="()=> { _addNew = !_addNew; }">
-                    Add New
+                    @AddNewButtonLabel()
                 </button>
             }
         </span>
-        @*<span class="col-2">
-            @if (_cuttentSelected != null)
-            {
-                <button type="button" class="btn btn-light" @onclick="()=>storeBookFromLookup(_cuttentSelected)">Store</button>
-            }
-        </span>*@
     </p>
 </section>
 @if (_addNew)
 {
     <section>
-        <AddNewBookComponent Book="_cuttentSelected" SubmitBook="(book)=>storeNewBook(book)"></AddNewBookComponent>
+        <AddNewBookComponent Book="_currentSelected" SubmitBook="(book)=>storeNewBook(book)"></AddNewBookComponent>
     </section>
 }
 @if (!string.IsNullOrEmpty(_storeResultMessage))
@@ -51,30 +45,28 @@
 }
 <section>
 
-    @if (_isUpdating)
+    @if (_isDoing)
     {
-        <p><em>Updating...</em></p>
+        <p><em>@_doingMessage</em></p>
     }
-    @if (_isSearching)
+    else if (!_addNew)
     {
-        <p><em>Loading...</em></p>
-    }
-    else
-    {
-        <SearchResultComponent searchResult="@results" selectItem="((selectedResult)=> selectedChange(selectedResult))"></SearchResultComponent>
+        <SearchResultComponent searchResult="@results" addBook="((selectedResult)=> addBook(selectedResult))"></SearchResultComponent>
     }
 </section>
 
 @code
 {
     private string _barcodeValue = string.Empty;
-    private Boolean _isSearching = false;
-    private Boolean _isUpdating = false;
+    private Boolean _isDoing = false;
     private Boolean _addNew = false;
     private BarcodeLookupResult[] results;
-    private BarcodeLookupResult _cuttentSelected;
+    private BarcodeLookupResult _currentSelected;
     private BookModel bookModel = null;
     private string _storeResultMessage;
+    private const string _loadingMessage = "Loading ...";
+    private const string _updatingMessage = "Updating ...";
+    private string _doingMessage = _loadingMessage;
 
     private void SetValue(string value)
     {
@@ -85,29 +77,26 @@
     private async Task searchBarcode()
     {
         _storeResultMessage = string.Empty;
-        _isSearching = true;
+        _isDoing = true;
 
+        _doingMessage = _loadingMessage;
         results = await Http.GetFromJsonAsync<BarcodeLookupResult[]>($"BarcodeLookup?barcode={_barcodeValue}");
 
-        _isSearching = false;
+        _isDoing = false;
     }
 
-    private void selectedChange(BarcodeLookupResult selected)
+    private void addBook(BarcodeLookupResult selected)
     {
-        _cuttentSelected = selected;
+        _currentSelected = selected;
+        _addNew = true;
     }
 
-    //private async Task storeBookFromLookup(BarcodeLookupResult bookToStore)
-    //{
-    //    //_isUpdating = true;
-    //    //var response = await Http.PostAsJsonAsync<BarcodeLookupResult>("book", bookToStore);
-    //    //await ProcessStoreBookResponse(response);
-
-    //}
+    private string AddNewButtonLabel() => _addNew ? "Cancel" : "Add New";
 
     private async Task storeNewBook(StoreNewBookRequest bookToStore)
     {
-        _isUpdating = true;
+        _isDoing = true;
+        _doingMessage = _updatingMessage;
         var response = await Http.PostAsJsonAsync<StoreNewBookRequest>("book", bookToStore);
         await ProcessStoreBookResponse(response);
     }
@@ -131,13 +120,6 @@
         {
             _storeResultMessage = response.StatusCode.ToString();
         }
-        _isUpdating = false;
+        _isDoing = false;
     }
-
-    //private StoreNewBookRequest ParseBookModelToStore(BookModel bookModel)
-    //{
-
-    //}
-
-
 }

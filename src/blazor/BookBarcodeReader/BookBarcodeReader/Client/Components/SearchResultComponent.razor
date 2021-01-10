@@ -5,9 +5,18 @@
     @if (searchResult != null)
         @foreach (var result in searchResult)
         {
-            <li @onclick="()=>Select(result)" class="@ItemCss(result)">
-                <h4>
-                    Title: @result.Title
+            <li class="@ItemCss(result)">
+                <h4 class="search-result-title">
+                    <span>
+                        @result.Title
+                    </span>
+                    <span>
+                        <button type="button"
+                                class="btn btn-light"
+                                @onclick="()=> AddBook(result)">
+                            Add
+                        </button>
+                    </span>
                 </h4>
 
                 <div>
@@ -47,7 +56,7 @@
     public BarcodeLookupResult[] searchResult { get; set; }
 
     [Parameter]
-    public EventCallback<BarcodeLookupResult> selectItem { get; set; }
+    public EventCallback<BarcodeLookupResult> addBook { get; set; }
 
 
     private BarcodeLookupResult selected { get; set; }
@@ -67,9 +76,9 @@
         return (selected != null && item.Id == selected.Id) ? css + " active" : css;
     }
 
-    private void Select(BarcodeLookupResult result)
+    private void AddBook(BarcodeLookupResult result)
     {
         selected = result;
-        selectItem.InvokeAsync(selected);
+        addBook.InvokeAsync(selected);
     }
 }

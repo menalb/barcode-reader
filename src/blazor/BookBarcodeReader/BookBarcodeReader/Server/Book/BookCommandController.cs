@@ -26,7 +26,7 @@ namespace BookBarcodeReader.Server.Book
             return PareStoreResult(result);
         }
 
-        public IActionResult PareStoreResult(StoreBookResult result)
+        private IActionResult PareStoreResult(StoreBookResult result)
         {
             switch (result)
             {

@@ -1,0 +1,18 @@
+﻿@using BookBarcodeReader.Shared.Book
+<ul class="list-group">
+
+    @if (books != null)
+        @foreach (var book in books)
+        {
+            <li>
+                @book.Title
+            </li>
+
+        }
+
+</ul>
+
+@code {
+    [Parameter]
+    public BookEntity[] books { get; set; }
+}

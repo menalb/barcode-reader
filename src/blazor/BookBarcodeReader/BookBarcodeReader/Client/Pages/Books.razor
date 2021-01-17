@@ -2,15 +2,24 @@
 @page "/books"
 @using BookBarcodeReader.Client.Components
 @using BookBarcodeReader.Shared.Book
-<h3>Books</h3>
-<BookListComponent books="books"></BookListComponent>
-
+<h3>My Books</h3>
+@if (_loading)
+{
+    <em>loading...</em>
+}
+else
+{
+    <BookListComponent books="books"></BookListComponent>
+}
 @code {
 
     public BookEntity[] books { get; set; }
 
+    private Boolean _loading = false;
     protected override async Task OnInitializedAsync()
     {
+        _loading = true;
         books = await Http.GetFromJsonAsync<BookEntity[]>($"book");
+        _loading = false;
     }
 }

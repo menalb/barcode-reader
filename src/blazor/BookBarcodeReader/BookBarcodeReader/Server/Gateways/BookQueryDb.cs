@@ -17,13 +17,13 @@ namespace BookBarcodeReader.Server.Gateways
                 .GetDatabase(dbSettings.DatabaseName)
                 .GetCollection<BookEntity>(dbSettings.CollectionName);
 
-        public async Task<IEnumerable<BookEntity>> GetAll() => 
-            await _books.Find(Builders<BookEntity>.Filter.Empty).ToListAsync();
+        public async Task<IEnumerable<BookEntity>> GetAll() =>
+            await _books.Find(Builders<BookEntity>.Filter.Empty).SortBy(book => book.Title).ToListAsync();
 
-        public async Task<BookEntity> GetByIsbn(string isbn) => 
+        public async Task<BookEntity> GetByIsbn(string isbn) =>
             await _books.Find(book => book.ISBN == isbn).FirstOrDefaultAsync();
 
-        public async Task<IEnumerable<BookEntity>> GetByTitle(string title) => 
+        public async Task<IEnumerable<BookEntity>> GetByTitle(string title) =>
             await _books.Find(book => book.Title.Contains(title, System.StringComparison.InvariantCultureIgnoreCase)).ToListAsync();
     }
 }

@@ -5,7 +5,7 @@
         @foreach (var book in books)
         {
             <li>
-                @book.Title
+                @book.Title.ToUpperInvariant() ( @FormatAuthors(book) )
             </li>
 
         }
@@ -15,4 +15,6 @@
 @code {
     [Parameter]
     public BookEntity[] books { get; set; }
+
+    private string FormatAuthors(BookEntity book) => book.Authors?.Select(author => author.Name).Aggregate((a, b) => $"{a} - {b}");
 }

@@ -76,7 +76,7 @@ namespace BookBarcodeReader.Server.Controllers
             });
         private string ParseISBN(IEnumerable<BookIdentifier> identifiers)
         {
-            var isbn = identifiers.FirstOrDefault(id => id.Type == "ISBN_13");
+            var isbn = identifiers?.FirstOrDefault(id => id.Type == "ISBN_13");
             if (isbn != null)
             {
                 return isbn.Value;

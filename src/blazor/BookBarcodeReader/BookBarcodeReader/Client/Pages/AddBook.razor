@@ -1,0 +1,125 @@
+﻿@page "/add-book"
+@using BookBarcodeReader.Client.Components
+@inject IJSRuntime IJSRuntime
+@inject HttpClient Http
+@using BookBarcodeReader.Shared
+@using System.Text.Json
+@using BookBarcodeReader.Shared.Book
+
+<section>
+    <div class="row p-1">
+        <BarcodeReaderComponent GetValue="((value) => SetValue(value))">
+        </BarcodeReaderComponent>
+    </div>
+    <p class="row p-1 form-group">
+        <span class="col-6">
+            <label for="barcodeInput">Barcode: </label>
+            <input id="barcodeInput" @bind="@_barcodeValue" />
+        </span>
+        <span class=" col-2">
+            <button type="button" class="btn btn-light" @onclick="searchBarcode">Search</button>
+        </span>
+        <span class="col-2">
+            @if (!string.IsNullOrEmpty(_barcodeValue))
+            {
+                <button type="button"
+                        class="btn btn-light"
+                        @onclick="()=> { _addNew = !_addNew; }">
+                    @AddNewButtonLabel()
+                </button>
+            }
+        </span>
+    </p>
+</section>
+@if (_addNew)
+{
+    <section>
+        <AddNewBookComponent Book="_currentSelected" SubmitBook="(book)=>storeNewBook(book)"></AddNewBookComponent>
+    </section>
+}
+@if (!string.IsNullOrEmpty(_storeResultMessage))
+{
+    <section>
+        @_storeResultMessage
+    </section>
+}
+<section>
+
+    @if (_isDoing)
+    {
+        <p><em>@_doingMessage</em></p>
+    }
+    else if (!_addNew)
+    {
+        <SearchResultComponent searchResult="@results" addBook="((selectedResult)=> addBook(selectedResult))"></SearchResultComponent>
+    }
+</section>
+
+@code
+{
+    private string _barcodeValue = string.Empty;
+    private Boolean _isDoing = false;
+    private Boolean _addNew = false;
+    private BarcodeLookupResult[] results;
+    private BarcodeLookupResult _currentSelected;
+    private BookModel bookModel = null;
+    private string _storeResultMessage;
+    private const string _loadingMessage = "Loading ...";
+    private const string _updatingMessage = "Updating ...";
+    private string _doingMessage = _loadingMessage;
+
+    private void SetValue(string value)
+    {
+        _barcodeValue = value;
+        results = null;
+    }
+
+    private async Task searchBarcode()
+    {
+        _storeResultMessage = string.Empty;
+        _isDoing = true;
+
+        _doingMessage = _loadingMessage;
+        results = await Http.GetFromJsonAsync<BarcodeLookupResult[]>($"BarcodeLookup?barcode={_barcodeValue}");
+
+        _isDoing = false;
+    }
+
+    private void addBook(BarcodeLookupResult selected)
+    {
+        _currentSelected = selected;
+        _addNew = true;
+    }
+
+    private string AddNewButtonLabel() => _addNew ? "Cancel" : "Add New";
+
+    private async Task storeNewBook(StoreNewBookRequest bookToStore)
+    {
+        _isDoing = true;
+        _doingMessage = _updatingMessage;
+        var response = await Http.PostAsJsonAsync<StoreNewBookRequest>("book", bookToStore);
+        await ProcessStoreBookResponse(response);
+    }
+
+    private async Task ProcessStoreBookResponse(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+        {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            };
+
+            var book = JsonSerializer.Deserialize<BookBarcodeReader.Shared.Book.BookEntity>
+                (await response.Content.ReadAsStringAsync(), options);
+            _storeResultMessage = "Added book: " + book.Id;
+
+            _addNew = false;
+        }
+        else
+        {
+            _storeResultMessage = response.StatusCode.ToString();
+        }
+        _isDoing = false;
+    }
+}

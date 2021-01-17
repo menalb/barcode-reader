@@ -1,0 +1,16 @@
+﻿@inject HttpClient Http
+@page "/books"
+@using BookBarcodeReader.Client.Components
+@using BookBarcodeReader.Shared.Book
+<h3>Books</h3>
+<BookListComponent books="books"></BookListComponent>
+
+@code {
+
+    public BookEntity[] books { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        books = await Http.GetFromJsonAsync<BookEntity[]>($"book");
+    }
+}

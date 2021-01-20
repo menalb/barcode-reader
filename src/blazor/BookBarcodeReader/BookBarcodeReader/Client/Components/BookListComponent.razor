@@ -2,13 +2,18 @@
 <ul class="list-group">
 
     @if (books != null)
-        @foreach (var book in books)
-        {
-            <li>
-                @book.Title.ToUpperInvariant() ( @FormatAuthors(book) )
-            </li>
+    @*<Virtualize Items="@books" Context="book">
+        <li>
+            @book.Title.ToUpperInvariant() ( @FormatAuthors(book) )
+        </li>
+    </Virtualize>*@
+    @foreach (var book in books)
+    {
+        <li>
+            @book.Title.ToUpperInvariant() ( @FormatAuthors(book) )
+        </li>
 
-        }
+    }
 
 </ul>
 

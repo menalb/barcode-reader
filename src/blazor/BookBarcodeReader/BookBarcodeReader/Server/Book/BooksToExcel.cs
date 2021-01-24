@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace BookBarcodeReader.Server.Book
 {
-    public class BooksToExcel
+    public class BooksToExcel : System.IDisposable
     {
         private readonly IEnumerable<string[]> titles =
             new List<string[]> { new string[] { "Title", "Sub Title", "Authors", "Language", "Description" } };
@@ -54,6 +54,11 @@ namespace BookBarcodeReader.Server.Book
                 book.Language,
                 book.Description
                 ));
+
+        public void Dispose()
+        {
+            _wb.Dispose();
+        }
     }
 }
 

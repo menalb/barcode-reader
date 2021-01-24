@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections;
+
 using System.IO;
 using System.Threading.Tasks;
 
@@ -32,14 +32,12 @@ namespace BookBarcodeReader.Server.Book
             var result = await _query.GetAll();
 
             //save file to memory stream and return it as byte array
-            using (var ms = new MemoryStream())
-            {
-                new BooksToExcel(result).Build().SaveAs(ms);
+            using var ms = new MemoryStream();
+            using var be = new BooksToExcel(result);
+            be.Build().SaveAs(ms);
+            var stream = ms.ToArray();
 
-                var stream = ms.ToArray();
-
-                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Books.xlsx");
-            }
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Books.xlsx");
         }
     }
 }

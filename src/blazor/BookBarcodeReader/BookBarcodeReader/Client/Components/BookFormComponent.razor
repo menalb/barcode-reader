@@ -67,6 +67,40 @@
 
     private void HandleValidSubmit()
     {
-        SubmitBook.InvokeAsync(bookModel);
+
+        var identifiers = bookModel.IdentifiersInput.Split(",").Select(a => ParseBookIdentifier(a));
+        var book = new BookModel
+            {
+                Title = bookModel.Title,
+                Language = bookModel.Language,
+                Publisher = bookModel.Publisher,
+                PublishedDate = bookModel.PublishedDate,
+                SubTitle = bookModel.SubTitle,
+                Description = bookModel.Description,
+                Authors = bookModel.AuthorsInput.Split(",").Select(a => new AuthorInfo { Name = a.Trim() }),
+                Categories = bookModel.CategoriesInput.Split(",").Select(a => new CategoryInfo { Name = a.Trim() }),
+                Identifiers = identifiers,
+                ISBN = ParseISBN(identifiers),
+                Images = bookModel.Images,
+                Link = bookModel.Link,
+            };
+
+        SubmitBook.InvokeAsync(book);
+    }
+
+    private BookIdentifier ParseBookIdentifier(string identifierInput)
+    {
+        var splitted = identifierInput.Split(":");
+        return new BookIdentifier { Type = splitted[0], Value = splitted[1] };
+    }
+
+    private string ParseISBN(IEnumerable<BookIdentifier> identifiers)
+    {
+        var isbn = identifiers.FirstOrDefault(id => id.Type == "ISBN_13");
+        if (isbn != null)
+        {
+            return isbn.Value;
+        }
+        return identifiers?.FirstOrDefault().Value;
     }
 }

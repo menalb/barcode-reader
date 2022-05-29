@@ -23,5 +23,11 @@ namespace BookBarcodeReader.Server.Book
             }
             return new ISBNAlreadyStoredStoreBookResult();
         }
+
+        public async Task<StoreBookResult> Update(UpdateBookRequest book)
+        {
+            await _command.UpdateBook(book);
+            return new SuccessfulUpdateBookResult();
+        }
     }
 }

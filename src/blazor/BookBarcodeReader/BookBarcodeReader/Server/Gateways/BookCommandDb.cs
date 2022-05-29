@@ -23,7 +23,15 @@ namespace BookBarcodeReader.Server.Gateways
             return book;
         }
 
-        private BookEntity MapStoreRequest(StoreNewBookRequest request) =>
+        public async Task<BookEntity> UpdateBook(UpdateBookRequest bookToUpdate)
+        {
+            var book = MapStoreRequest(bookToUpdate);
+            book.Id = bookToUpdate.Id;
+            await _books.ReplaceOneAsync(f => f.Id == book.Id, book);
+            return book;
+        }
+
+        private BookEntity MapStoreRequest(BookBaseEntity request) =>
           new BookEntity
           {
               Description = request.Description,

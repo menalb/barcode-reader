@@ -4,4 +4,7 @@
     {
 
     }
+    public class UpdateBookRequest : BookEntity
+    {
+    }
 }

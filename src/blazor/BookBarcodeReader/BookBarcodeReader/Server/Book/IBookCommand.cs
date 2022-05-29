@@ -8,5 +8,6 @@ namespace BookBarcodeReader.Server.Book
     public interface IBookCommand
     {
         Task<BookEntity> StoreBook(StoreNewBookRequest book);
+        Task<BookEntity> UpdateBook(UpdateBookRequest book);
     }
 }

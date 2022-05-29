@@ -3,7 +3,7 @@
 @using BookBarcodeReader.Client.Components
 @using BookBarcodeReader.Shared.Book
 
-@if (_loading)
+@if (_isDoing)
 {
     <em>loading...</em>
 }
@@ -23,35 +23,41 @@ else
 
     public BookEntity book { get; set; }
 
-    private Boolean _loading = false;
+    private Boolean _isDoing = false;
 
     private EditBookModel model { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        _loading = true;
+        _isDoing = true;
         book = await Http.GetFromJsonAsync<BookEntity>($"books/" + BookId);
 
-        model = new EditBookModel
-            {
-                Id = book.Id,
-                Title = book.Title,
-                SubTitle = book.SubTitle,
-                Identifiers = book.Identifiers,
-                Authors = book.Authors,
-                Description = book.Description,
-                Categories = book.Categories,
-                Images = book.Images,
-                ISBN = book.ISBN,
-                Language = book.Language,
-                Link = book.Link,
-                PublishedDate = book.PublishedDate,
-                Publisher = book.Publisher
-            };
+        model = new EditBookModel(book);
 
-        _loading = false;
+        _isDoing = false;
     }
 
-    private void Submit(BookModel bookModel)
-    { }
+    private async Task Submit(BookModel bookModel)
+    {
+        var bookToUpdate = new UpdateBookRequest
+            {
+                Id = book.Id,
+                Authors = bookModel.Authors,
+                Categories = bookModel.Categories,
+                Description = bookModel.Description,
+                Identifiers = bookModel.Identifiers,
+                Images = bookModel.Images,
+                ISBN = bookModel.ISBN,
+                Language = bookModel.Language,
+                Link = bookModel.Link,
+                PublishedDate = bookModel.PublishedDate,
+                Publisher = bookModel.PublishedDate,
+                SubTitle = bookModel.SubTitle,
+                Title = bookModel.Title
+            };
+
+        _isDoing = true;
+        var response = await Http.PutAsJsonAsync<UpdateBookRequest>("book", bookToUpdate);
+        _isDoing = false;
+    }
 }

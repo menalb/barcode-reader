@@ -9,17 +9,56 @@
 }
 else
 {
-    <BookListComponent books="books"></BookListComponent>
+    <section>
+        <div>
+            <input type="text" @bind-value="@SearchText" />
+            <button @onclick="@Search" class="btn-link btn-primary">Search</button>
+        </div>
+        <div>
+            <NavLink href="add-book" title="Add new book" class="nav-link">
+                Add New Book
+            </NavLink>
+        </div>
+    </section>
+    <BookListComponent books="filteredBooks"></BookListComponent>
 }
 @code {
 
-    public BookEntity[] books { get; set; }
+    public IEnumerable<BookEntity> books { get; set; }
+    public BookEntity[] filteredBooks { get; set; }
 
     private Boolean _loading = false;
+
+    private string SearchText { get; set; }
+
+    void Search()
+    {
+        Console.WriteLine(SearchText);
+        if (string.IsNullOrEmpty(SearchText))
+        {
+            filteredBooks = books.Select(x => x).ToArray();
+        }
+        else
+        {
+            var text = SearchText.ToUpper();
+            filteredBooks = books.Where(b =>
+                b.Title.ToUpper().Contains(text)
+                ||
+                (!string.IsNullOrEmpty(b.SubTitle)  && b.SubTitle.ToUpper().Contains(text))
+                ||
+                (
+                    b.Authors != null &&
+                    b.Authors.Any(a => a.Name.ToUpper().Contains(text))
+                )
+            ).ToArray();
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-        books = await Http.GetFromJsonAsync<BookEntity[]>($"books");
+        books = await Http.GetFromJsonAsync<IEnumerable<BookEntity>>($"books");
+        filteredBooks = books.Select(x => x).ToArray();
         _loading = false;
     }
 }

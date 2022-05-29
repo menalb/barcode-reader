@@ -1,0 +1,57 @@
+﻿@page "/book/{BookId}"
+@inject HttpClient Http
+@using BookBarcodeReader.Client.Components
+@using BookBarcodeReader.Shared.Book
+
+@if (_loading)
+{
+    <em>loading...</em>
+}
+else
+{
+    <section>
+        <h3>Book @book.Title</h3>
+        <div>Title: @book.Title</div>
+        <div>SubTitle: @book.SubTitle</div>
+
+        <BookFormComponent bookModel="model" SubmitBook="(book)=>Submit(book)"></BookFormComponent>
+    </section>
+}
+@code {
+    [Parameter]
+    public string BookId { get; set; }
+
+    public BookEntity book { get; set; }
+
+    private Boolean _loading = false;
+
+    private EditBookModel model { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        book = await Http.GetFromJsonAsync<BookEntity>($"books/" + BookId);
+
+        model = new EditBookModel
+            {
+                Id = book.Id,
+                Title = book.Title,
+                SubTitle = book.SubTitle,
+                Identifiers = book.Identifiers,
+                Authors = book.Authors,
+                Description = book.Description,
+                Categories = book.Categories,
+                Images = book.Images,
+                ISBN = book.ISBN,
+                Language = book.Language,
+                Link = book.Link,
+                PublishedDate = book.PublishedDate,
+                Publisher = book.Publisher
+            };
+
+        _loading = false;
+    }
+
+    private void Submit(BookModel bookModel)
+    { }
+}

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace BookBarcodeReader.Server.Book
 {
     [ApiController]
-    [Route("book")]
+    [Route("books")]
     public class BookQueryController : ControllerBase
     {
         private readonly ILogger<BookQueryController> _logger;
@@ -23,6 +23,13 @@ namespace BookBarcodeReader.Server.Book
         public async Task<IActionResult> All()
         {
             var result = await _query.GetAll();
+            return Ok(result);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(string id)
+        {
+            var result = await _query.GetById(id);
             return Ok(result);
         }
 

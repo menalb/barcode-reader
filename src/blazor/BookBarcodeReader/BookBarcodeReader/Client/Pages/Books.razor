@@ -19,7 +19,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-        books = await Http.GetFromJsonAsync<BookEntity[]>($"book");
+        books = await Http.GetFromJsonAsync<BookEntity[]>($"books");
         _loading = false;
     }
 }

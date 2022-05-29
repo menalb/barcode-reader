@@ -10,5 +10,6 @@ namespace BookBarcodeReader.Server.Book
         Task<IEnumerable<BookEntity>> GetAll();
         Task<IEnumerable<BookEntity>> GetByTitle(string title);
         Task<BookEntity> GetByIsbn(string isbn);
+        Task<BookEntity> GetById(string id);
     }
 }

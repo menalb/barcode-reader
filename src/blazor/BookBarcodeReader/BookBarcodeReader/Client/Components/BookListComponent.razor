@@ -2,18 +2,20 @@
 <ul class="list-group">
 
     @if (books != null)
-    @*<Virtualize Items="@books" Context="book">
-        <li>
-            @book.Title.ToUpperInvariant() ( @FormatAuthors(book) )
-        </li>
+        @*<Virtualize Items="@books" Context="book">
+    <li>
+    @book.Title.ToUpperInvariant() ( @FormatAuthors(book) )
+    </li>
     </Virtualize>*@
-    @foreach (var book in books)
-    {
-        <li>
-            @book.Title.ToUpperInvariant() ( @FormatAuthors(book) )
-        </li>
+        @foreach (var book in books)
+        {
+            <li class=list-group-item>
+                <NavLink href=@("book/" + book.Id) title="Open book detail page" class="nav-link">
+                    @book.Title.ToUpperInvariant() ( @FormatAuthors(book) )
+                </NavLink>
+            </li>
 
-    }
+        }
 
 </ul>
 

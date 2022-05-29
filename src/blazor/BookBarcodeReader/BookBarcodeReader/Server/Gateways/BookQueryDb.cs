@@ -20,6 +20,9 @@ namespace BookBarcodeReader.Server.Gateways
         public async Task<IEnumerable<BookEntity>> GetAll() =>
             await _books.Find(Builders<BookEntity>.Filter.Empty).SortBy(book => book.Title).ToListAsync();
 
+        public async Task<BookEntity> GetById(string id) =>
+            await _books.Find(book => book.Id == id).SingleOrDefaultAsync();
+
         public async Task<BookEntity> GetByIsbn(string isbn) =>
             await _books.Find(book => book.ISBN == isbn).FirstOrDefaultAsync();
 

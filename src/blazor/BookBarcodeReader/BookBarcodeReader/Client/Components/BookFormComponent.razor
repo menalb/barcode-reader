@@ -1,59 +1,59 @@
 ﻿@using BookBarcodeReader.Shared.Book
 
-<EditForm Model="@bookModel" OnValidSubmit="@HandleValidSubmit">
+<EditForm Model="@BookModel" OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
     <div class="form-group row">
         <label for="title" class="col-sm-2 col-form-label">
             Title:
         </label>
-        <InputText id="title" class="col-sm-10" @bind-Value="bookModel.Title" />
+        <InputText id="title" class="col-sm-10" @bind-Value="BookModel.Title" />
     </div>
     <div class="form-group row">
         <label for="subtitle" class="col-sm-2 col-form-label">
             Sub Title:
         </label>
-        <InputText id="subtitle" class="col-sm-10" @bind-Value="bookModel.SubTitle" />
+        <InputText id="subtitle" class="col-sm-10" @bind-Value="BookModel.SubTitle" />
     </div>
     <div class="form-group row">
         <label for="description" class="col-sm-2 col-form-label">
             Description
         </label>
-        <InputTextArea id="description" class="col-sm-10" @bind-Value="bookModel.Description" />
+        <InputTextArea id="description" class="col-sm-10" @bind-Value="BookModel.Description" />
     </div>
     <div class="form-group row">
         <label for="pubDate" class="col-sm-2 col-form-label">
             Published Date:
         </label>
-        <InputText id="pubDate" class="col-sm-4" @bind-Value="bookModel.PublishedDate" />
+        <InputText id="pubDate" class="col-sm-4" @bind-Value="BookModel.PublishedDate" />
         <label for="publisher" class="col-sm-2 col-form-label">
             Publisher:
         </label>
-        <InputText id="publisher" class="col-sm-4" @bind-Value="bookModel.Publisher" />
+        <InputText id="publisher" class="col-sm-4" @bind-Value="BookModel.Publisher" />
     </div>
     <div class="form-group row">
         <label for="language" class="col-sm-2 col-form-label">
             Language
         </label>
-        <InputText id="language" class="col-sm-10" @bind-Value="bookModel.Language" />
+        <InputText id="language" class="col-sm-10" @bind-Value="BookModel.Language" />
     </div>
     <div class="form-group row">
         <label for="authors" class="col-sm-2 col-form-label">
             Authors (comma separated):
         </label>
-        <InputText id="authors" class="col-sm-10" @bind-Value="bookModel.AuthorsInput" />
+        <InputText id="authors" class="col-sm-10" @bind-Value="BookModel.AuthorsInput" />
     </div>
     <div class="form-group row">
         <label for="categories" class="col-sm-2 col-form-label">
             Categories (comma separated):
         </label>
-        <InputText id="categories" class="col-sm-10" @bind-Value="bookModel.CategoriesInput" />
+        <InputText id="categories" class="col-sm-10" @bind-Value="BookModel.CategoriesInput" />
     </div>
     <div class="form-group row">
         <label for="identifiers" class="col-sm-2 col-form-label">
             Identifiers (comma separated):
         </label>
-        <InputText id="identifiers" class="col-sm-10" @bind-Value="bookModel.IdentifiersInput" />
+        <InputText id="identifiers" class="col-sm-10" @bind-Value="BookModel.IdentifiersInput" />
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
 </EditForm>
@@ -63,26 +63,26 @@
     public EventCallback<BookModel> SubmitBook { get; set; }
 
     [Parameter]
-    public BookModel bookModel { get; set; }
+    public BookModel BookModel { get; set; } = new();
 
     private void HandleValidSubmit()
     {
 
-        var identifiers = bookModel.IdentifiersInput.Split(",").Select(a => ParseBookIdentifier(a));
+        var identifiers = BookModel.IdentifiersInput.Split(",").Select(a => ParseBookIdentifier(a));
         var book = new BookModel
             {
-                Title = bookModel.Title,
-                Language = bookModel.Language,
-                Publisher = bookModel.Publisher,
-                PublishedDate = bookModel.PublishedDate,
-                SubTitle = bookModel.SubTitle,
-                Description = bookModel.Description,
-                Authors = bookModel.AuthorsInput.Split(",").Select(a => new AuthorInfo { Name = a.Trim() }),
-                Categories = bookModel.CategoriesInput.Split(",").Select(a => new CategoryInfo { Name = a.Trim() }),
+                Title = BookModel.Title,
+                Language = BookModel.Language,
+                Publisher = BookModel.Publisher,
+                PublishedDate = BookModel.PublishedDate,
+                SubTitle = BookModel.SubTitle,
+                Description = BookModel.Description,
+                Authors = BookModel.AuthorsInput.Split(",").Select(a => new AuthorInfo { Name = a.Trim() }),
+                Categories = BookModel.CategoriesInput.Split(",").Select(a => new CategoryInfo { Name = a.Trim() }),
                 Identifiers = identifiers,
                 ISBN = ParseISBN(identifiers),
-                Images = bookModel.Images,
-                Link = bookModel.Link,
+                Images = BookModel.Images,
+                Link = BookModel.Link,
             };
 
         SubmitBook.InvokeAsync(book);
@@ -101,6 +101,6 @@
         {
             return isbn.Value;
         }
-        return identifiers?.FirstOrDefault().Value;
+        return identifiers?.FirstOrDefault()?.Value ?? "";
     }
 }

@@ -14,23 +14,23 @@ else
         <div>Title: @book.Title</div>
         <div>SubTitle: @book.SubTitle</div>
 
-        <BookFormComponent bookModel="model" SubmitBook="(book)=>Submit(book)"></BookFormComponent>
+        <BookFormComponent BookModel="model" SubmitBook="(book)=>Submit(book)"></BookFormComponent>
     </section>
 }
 @code {
     [Parameter]
-    public string BookId { get; set; }
+    public string BookId { get; set; } = "";
 
-    public BookEntity book { get; set; }
+    public BookEntity book { get; set; } = new BookEntity();
 
     private Boolean _isDoing = false;
 
-    private EditBookModel model { get; set; }
+    private EditBookModel? model { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         _isDoing = true;
-        book = await Http.GetFromJsonAsync<BookEntity>($"books/" + BookId);
+        book = await Http.GetFromJsonAsync<BookEntity>($"books/" + BookId) ?? new();
 
         model = new EditBookModel(book);
 

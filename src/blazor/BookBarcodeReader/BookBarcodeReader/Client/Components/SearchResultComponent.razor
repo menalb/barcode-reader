@@ -2,8 +2,8 @@
 @using BookBarcodeReader.Shared.Book
 <ul class="list-group">
 
-    @if (searchResult != null)
-        @foreach (var result in searchResult)
+    @if (SearchResult != null)
+        @foreach (var result in SearchResult)
         {
             <li class="@ItemCss(result)">
                 <h4 class="search-result-title">
@@ -53,13 +53,13 @@
 
 @code {
     [Parameter]
-    public BarcodeLookupResult[] searchResult { get; set; }
+    public BarcodeLookupResult[] SearchResult { get; set; } = new BarcodeLookupResult[] { };
 
     [Parameter]
     public EventCallback<BarcodeLookupResult> addBook { get; set; }
 
 
-    private BarcodeLookupResult selected { get; set; }
+    private BarcodeLookupResult selected { get; set; } = new();
 
     private string FormatIdentifiers(IEnumerable<BookIdentifier> identifiers)
     {

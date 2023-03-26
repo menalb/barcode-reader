@@ -1,13 +1,13 @@
 ﻿@using BookBarcodeReader.Shared.Book
 <ul class="list-group">
 
-    @if (books != null)
+    @if (Books != null)
         @*<Virtualize Items="@books" Context="book">
     <li>
     @book.Title.ToUpperInvariant() ( @FormatAuthors(book) )
     </li>
     </Virtualize>*@
-        @foreach (var book in books)
+        @foreach (var book in Books)
         {
             <li class=list-group-item>
                 <NavLink href=@("book/" + book.Id) title="Open book detail page" class="nav-link">
@@ -21,7 +21,8 @@
 
 @code {
     [Parameter]
-    public BookEntity[] books { get; set; }
+    public BookEntity[] Books { get; set; } = new BookEntity[] { };
 
-    private string FormatAuthors(BookEntity book) => book.Authors?.Select(author => author.Name).Aggregate((a, b) => $"{a} - {b}");
+    private string FormatAuthors(BookEntity book) => 
+    book.Authors?.Select(author => author.Name).Aggregate((a, b) => $"{a} - {b}") ?? "";
 }

@@ -1,70 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace BookBarcodeReader.Server.Models
 {
     public class GoogleApiResponse
     {
-        [JsonProperty("totalItems")]
+        [JsonPropertyName("totalItems")]
         public int TotalItems { get; set; }
-        [JsonProperty("items")]
+        [JsonPropertyName("items")]
         public IEnumerable<ApiItem> Items { get; set; }
 
         public class ApiItem
         {
-            [JsonProperty("id")]
+            [JsonPropertyName("id")]
             public string Id { get; set; }
-            [JsonProperty("volumeInfo")]
+            [JsonPropertyName("volumeInfo")]
             public VolumeInfo VolumeInfo { get; set; }
-            [JsonProperty("selfLink")]
+            [JsonPropertyName("selfLink")]
             public string SelfLink { get; set; }
-            [JsonProperty("etag")]
+            [JsonPropertyName("etag")]
             public string ETag { get; set; }
-
         }
 
         public class VolumeInfo
         {
-            [JsonProperty("title")]
+            [JsonPropertyName("title")]
             public string Title { get; set; }
-            [JsonProperty("subtitle")]
+            [JsonPropertyName("subtitle")]
             public string SubTitle { get; set; }
-            [JsonProperty("description")]
+            [JsonPropertyName("description")]
             public string Description { get; set; }
-            [JsonProperty("imageLinks")]
+            [JsonPropertyName("imageLinks")]
             public ImageLinks Images { get; set; }
-            [JsonProperty("language")]
+            [JsonPropertyName("language")]
             public string Language { get; set; }
-            [JsonProperty("authors")]
+            [JsonPropertyName("authors")]
             public string[] Authors { get; set; }
-            [JsonProperty("categories")]
+            [JsonPropertyName("categories")]
             public string[] Categories { get; set; }
-            [JsonProperty("publisher")]
+            [JsonPropertyName("publisher")]
             public string Publisher { get; set; }
-            [JsonProperty("industryIdentifiers")]
+            [JsonPropertyName("industryIdentifiers")]
             public IEnumerable<IndustryIdentifiers> IndustryIdentifiers { get; set; }
-            [JsonProperty("publishedDate")]
+            [JsonPropertyName("publishedDate")]
             public string PublishedDate { get; set; }
         }
 
         public class ImageLinks
         {
-            [JsonProperty("smallThumbnail")]
+            [JsonPropertyName("smallThumbnail")]
             public string SmallThumbnail { get; set; }
-            [JsonProperty("thumbnail")]
+            [JsonPropertyName("thumbnail")]
             public string Thumbnail { get; set; }
         }
 
         public class IndustryIdentifiers
         {
-            [JsonProperty("type")]
+            [JsonPropertyName("type")]
             public string Type { get; set; }
-            [JsonProperty("identifier")]
+            [JsonPropertyName("identifier")]
             public string Identifier { get; set; }
         }
-
-
-
     }
 }

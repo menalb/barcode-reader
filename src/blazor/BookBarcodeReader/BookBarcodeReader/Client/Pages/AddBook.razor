@@ -51,7 +51,7 @@
     }
     else if (!_addNew)
     {
-        <SearchResultComponent searchResult="@results" addBook="((selectedResult)=> addBook(selectedResult))"></SearchResultComponent>
+        <SearchResultComponent SearchResult="@results" addBook="((selectedResult)=> addBook(selectedResult))"></SearchResultComponent>
     }
 </section>
 
@@ -60,10 +60,10 @@
     private string _barcodeValue = string.Empty;
     private Boolean _isDoing = false;
     private Boolean _addNew = false;
-    private BarcodeLookupResult[] results;
-    private BarcodeLookupResult _currentSelected;
-    private BookModel bookModel = null;
-    private string _storeResultMessage;
+    private BarcodeLookupResult[] results = new BarcodeLookupResult[] { };
+    private BarcodeLookupResult _currentSelected = new();
+    private BookModel bookModel = new();
+    private string _storeResultMessage = "";
     private const string _loadingMessage = "Loading ...";
     private const string _updatingMessage = "Updating ...";
     private string _doingMessage = _loadingMessage;
@@ -71,7 +71,7 @@
     private void SetValue(string value)
     {
         _barcodeValue = value;
-        results = null;
+        results = new BarcodeLookupResult[] { };
     }
 
     private async Task searchBarcode()
@@ -80,7 +80,9 @@
         _isDoing = true;
 
         _doingMessage = _loadingMessage;
-        results = await Http.GetFromJsonAsync<BarcodeLookupResult[]>($"BarcodeLookup?barcode={_barcodeValue}");
+        results = await Http
+        .GetFromJsonAsync<BarcodeLookupResult[]>($"BarcodeLookup?barcode={_barcodeValue}")
+        ?? new BarcodeLookupResult[] { };
 
         _isDoing = false;
     }
@@ -112,7 +114,7 @@
 
             var book = JsonSerializer.Deserialize<BookBarcodeReader.Shared.Book.BookEntity>
                 (await response.Content.ReadAsStringAsync(), options);
-            _storeResultMessage = "Added book: " + book.Id;
+            _storeResultMessage = "Added book: " + book?.Id ?? "";
 
             _addNew = false;
         }

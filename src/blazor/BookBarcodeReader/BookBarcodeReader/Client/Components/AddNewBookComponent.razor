@@ -3,7 +3,7 @@
 <h3>Add New Book</h3>
 
 <section>
-    <BookFormComponent bookModel="bookModel" SubmitBook="(book)=>Submit(book)"></BookFormComponent>
+    <BookFormComponent BookModel="bookModel" SubmitBook="(book)=>Submit(book)"></BookFormComponent>
 </section>
 
 @code {
@@ -12,9 +12,9 @@
     public EventCallback<StoreNewBookRequest> SubmitBook { get; set; }
 
     [Parameter]
-    public BarcodeLookupResult Book { get; set; } = null;
+    public BarcodeLookupResult? Book { get; set; } = null;
 
-    private BookModel bookModel;
+    private BookModel? bookModel;
 
     protected override void OnInitialized()
     {

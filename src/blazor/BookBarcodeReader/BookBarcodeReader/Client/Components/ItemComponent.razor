@@ -1,12 +1,10 @@
-﻿<p>Barcode: @barcode</p>
+﻿<p>Barcode: @Barcode</p>
 <div>
-
 </div>
 
 @code {
     [Parameter]
-    public string barcode { get; set; }
-    private string currentCounitemDescription = "";
+    public string Barcode { get; set; } = "";
 
     string buildRequest()
     {

@@ -20,16 +20,16 @@ else
             </NavLink>
         </div>
     </section>
-    <BookListComponent books="filteredBooks"></BookListComponent>
+    <BookListComponent Books="filteredBooks"></BookListComponent>
 }
 @code {
 
-    public IEnumerable<BookEntity> books { get; set; }
-    public BookEntity[] filteredBooks { get; set; }
+    public IEnumerable<BookEntity> books { get; set; } = Array.Empty<BookEntity>();
+    public BookEntity[] filteredBooks { get; set; } = Array.Empty<BookEntity>();
 
     private Boolean _loading = false;
 
-    private string SearchText { get; set; }
+    private string SearchText { get; set; } = "";
 
     void Search()
     {
@@ -44,7 +44,7 @@ else
             filteredBooks = books.Where(b =>
                 b.Title.ToUpper().Contains(text)
                 ||
-                (!string.IsNullOrEmpty(b.SubTitle)  && b.SubTitle.ToUpper().Contains(text))
+                (!string.IsNullOrEmpty(b.SubTitle) && b.SubTitle.ToUpper().Contains(text))
                 ||
                 (
                     b.Authors != null &&
@@ -57,7 +57,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-        books = await Http.GetFromJsonAsync<IEnumerable<BookEntity>>($"books");
+        books = await Http.GetFromJsonAsync<IEnumerable<BookEntity>>($"books") ?? new List<BookEntity>();
         filteredBooks = books.Select(x => x).ToArray();
         _loading = false;
     }

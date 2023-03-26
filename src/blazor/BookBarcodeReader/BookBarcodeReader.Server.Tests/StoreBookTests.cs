@@ -99,6 +99,11 @@ namespace BookBarcodeReader.Server.Tests
             });
         }
 
+        public Task<BookEntity> UpdateBook(UpdateBookRequest book)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public IEnumerable<StoreNewBookRequest> StoredBooks => _storedBooks;
     }
     public class BookQueryFake : IBookQuery
@@ -116,6 +121,11 @@ namespace BookBarcodeReader.Server.Tests
         public async Task<IEnumerable<BookEntity>> GetAll()
         {
             return await Task.FromResult(_booksToReturn);
+        }
+
+        public Task<BookEntity> GetById(string id)
+        {
+            throw new System.NotImplementedException();
         }
 
         public Task<BookEntity> GetByIsbn(string isbn)
